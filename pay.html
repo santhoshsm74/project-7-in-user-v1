@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e9ecef;
+            color: #495057;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll during animations */
+        }
+
+        .navbar {
+            background-color: #343a40 !important;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand:hover, .navbar-nav .nav-link:hover {
+            color: rgba(255, 255, 255, 1) !important;
+        }
+
+        #logout-button {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #logout-button:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        #transaction-history-link, #balance-link {
+            color: #007bff;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        #transaction-history-link:hover, #balance-link:hover {
+            color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .welcome-message {
+            font-size: 2rem;
+            color: #007bff;
+            text-align: center;
+            margin-top: 3rem;
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .alert {
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .search-bar {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar input {
+            padding: 1rem;
+            width: 70%;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        .user-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 2rem;
+        }
+
+        .user-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem;
+            border-bottom: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .user-list li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-list li:last-child {
+            border-bottom: none;
+        }
+
+        .user-list li form {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-list li form input[type="number"] {
+            width: 80px;
+            padding: 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            margin-right: 0.8rem;
+        }
+
+        .user-list li form button[type="submit"] {
+            background-color: #28a745;
+            border: none;
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .user-list li form button[type="submit"]:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 2.5rem;
+        }
+
+        .links a {
+            margin: 1rem;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Secure Payment</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" id="balance-link" href="{{ url_for('balance') }}"><i class="fas fa-wallet"></i> Check Balance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="transaction-history-link" href="{{ url_for('transaction_history') }}"><i class="fas fa-history"></i> Transaction History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}" style="text-decoration: none;">
+                        <button class="btn btn-danger" id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <p class="welcome-message">Welcome, {{ current_user }}! Make a payment.</p>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search users..." onkeyup="searchUsers()" class="form-control">
+        </div>
+
+        <div class="results">
+            {% if users %}
+                <h3>Users:</h3>
+                <ul class="user-list" id="userList">
+                    {% for user in users %}
+                        <li>
+                            <span>{{ user.username }}</span>
+                            <form method="POST" action="{{ url_for('pay') }}">
+                                <input type="number" name="amount" placeholder="Amount" required class="form-control">
+                                <input type="hidden" name="to_user" value="{{ user.username }}">
+                                <button type="submit" class="btn btn-success"><i class="fas fa-dollar-sign"></i> Pay</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="message">No users found.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function searchUsers() {
+            let input = document.getElementById('search').value.toLowerCase();
+            let users = document.getElementById('userList').getElementsByTagName('li');
+            for (let i = 0; i < users.length; i++) {
+                let usernameSpan = users[i].querySelector('span');
+                if (usernameSpan) {
+                    let username = usernameSpan.textContent.toLowerCase();
+                    if (username.includes(input)) {
+                        users[i].style.display = "flex";
+                    } else {
+                        users[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

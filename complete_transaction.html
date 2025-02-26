@@ -1,0 +1,224 @@
+--- START OF FILE complete_transaction.html ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Transaction</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e9ecef;
+            color: #495057;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .transaction-container {
+            background-color: #fff;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .transaction-container h1 {
+            color: #343a40;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert {
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .recipient-info {
+            margin-bottom: 2rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #ced4da;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        .btn-confirm {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-confirm:hover {
+            background-color: #218838;
+            border-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .transaction-result {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+        }
+
+        .links {
+            margin-top: 2.5rem;
+        }
+
+        .links a {
+            margin: 1rem;
+            text-decoration: none;
+            color: #007bff;
+            transition: color 0.3s ease, transform 0.2s ease;
+            display: inline-block;
+        }
+
+        .links a:hover {
+            color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            color: #28a745; /* Green for success */
+            animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .info-message {
+            color: #007bff; /* Blue for information */
+        }
+
+        .decrypted-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="transaction-container">
+        <h1><i class="fas fa-check-circle"></i> Complete Transaction</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="recipient-info">
+            <p class="info-message">An OTP has been sent to: <strong>{{ recipient_email }}</strong></p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="otp">Enter OTP:</label>
+                <input type="text" id="otp" name="otp" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-confirm"><i class="fas fa-check"></i> Confirm Transaction</button>
+        </form>
+
+        {% if decrypted_amount %}
+            <p class="transaction-result success-message">
+                <i class="fas fa-check-double"></i> Transaction Successful!
+            </p>
+            <div class="decrypted-amount">
+                Decrypted Amount: ₹{{ decrypted_amount }}
+            </div>
+        {% endif %}
+
+        <div class="links">
+            <a href="{{ url_for('pay') }}"><i class="fas fa-arrow-left"></i> Back to Payment</a>
+            <a href="{{ url_for('transaction_history') }}"><i class="fas fa-history"></i> Transaction History</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

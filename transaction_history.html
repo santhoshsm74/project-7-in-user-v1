@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e9ecef;
+            color: #495057;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #343a40;
+            animation: slideInDown 0.7s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-message {
+            font-size: 1.5rem;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden; /* Hide overflow for rounded corners */
+        }
+
+        .transaction-table th, .transaction-table td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .transaction-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .transaction-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .transaction-table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-top: 2rem;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 2.5rem;
+        }
+
+        .links a {
+            margin: 1rem;
+            text-decoration: none;
+            font-size: 1.1rem;
+            color: #007bff;
+            transition: color 0.3s ease, transform 0.2s ease;
+            display: inline-block;
+        }
+
+        .links a:hover {
+            color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #logout-button {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            display: block;
+            margin: 2rem auto;
+            width: fit-content;
+        }
+
+        #logout-button:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .action-sent {
+            color: #28a745; /* Green for Sent */
+            font-weight: bold;
+        }
+
+        .action-received {
+            color: #007bff; /* Blue for Received */
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-history"></i> Transaction History</h1>
+        <p class="welcome-message">Welcome, {{ current_user }}! Here are your recent transactions.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'danger' %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if transactions %}
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>To User</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.date }}</td>
+                            <td>₹{{ transaction.amount }}</td>
+                            <td>{{ transaction.to_user }}</td>
+                            <td>
+                                {% if transaction.action == 'Sent' %}
+                                    <span class="action-sent">Sent</span>
+                                {% elif transaction.action == 'Received' %}
+                                    <span class="action-received">Received</span>
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="message">No transaction history found.</p>
+        {% endif %}
+
+        <div class="links">
+            <a href="{{ url_for('balance') }}"><i class="fas fa-wallet"></i> Check Balance</a>
+            <a href="{{ url_for('pay') }}"><i class="fas fa-dollar-sign"></i> Make a Payment</a>
+        </div>
+
+        <a href="{{ url_for('logout') }}">
+            <button class="btn btn-danger" id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
